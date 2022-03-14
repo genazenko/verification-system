@@ -1,0 +1,95 @@
+version: '2'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  template:
+    build:
+      context: .
+      dockerfile: Dockerfile-template
+    container_name: template
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SERVER_PORT=8080
+
+  notification:
+    build:
+      context: .
+      dockerfile: Dockerfile-notification
+    container_name: notification
+    depends_on:
+      - db
+      - kafka
+      - template
+      - mailhog
+      - gotify
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - spring.kafka.bootstrap-servers=kafka:9092
+      - rest.template.endpoint=http://template:8080/template/templates/render
+      - SERVER_PORT=8080
+      - SPRING_MAIL_HOST=mailhog
+      - SPRING_MAIL_PORT=1025
+      - rest.gotify.endpoint=http://gotify:80/message?token={token}
+
+  verification:
+    build:
+      context: .
+      dockerfile: Dockerfile-verification
+    container_name: verification
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+      - kafka
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - spring.kafka.bootstrap-servers=kafka:9092
+      - SERVER_PORT=8080
+
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  mailhog:
+    image: 'mailhog/mailhog:latest'
+    container_name: mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+
+  gotify:
+    image: 'gotify/server'
+    container_name: gotify
+    ports:
+      - 8090:80
+    volumes:
+      - "./gotify_data:/app/data"

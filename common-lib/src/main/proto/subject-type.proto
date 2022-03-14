@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package com.sunfinance.group.verification.system;
+
+import "google/protobuf/wrappers.proto";
+
+message Subject {
+  google.protobuf.StringValue identity = 1;
+  google.protobuf.StringValue type = 2;
+}

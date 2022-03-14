@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: CREATE_VERIFICATION_TABLE
+      author: g.zenko
+      changes:
+        - sqlFile:
+            dbms: 'postgresql'
+            endDelimiter: ';'
+            splitStatements: true
+            path: sql/create_verification_table.sql
+            stripComments: true
+            relativeToChangelogFile: true
+      rollback:
+        - sqlFile:
+            dbms: 'postgresql'
+            endDelimiter: ';'
+            splitStatements: true
+            path: rollback/create_verification_table_rollback.sql
+            stripComments: true
+            relativeToChangelogFile: true

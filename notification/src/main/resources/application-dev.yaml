@@ -1,0 +1,51 @@
+spring:
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog.yml
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: notification-pool
+      maximum-pool-size: 10
+      minimum-idle: 1
+    type: com.zaxxer.hikari.HikariDataSource
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+    consumer:
+      group-id: notification-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      enable-auto-commit: false
+      max-poll-records: 20
+    listener:
+      ack-mode: MANUAL
+  mail:
+    host: localhost
+    port: 1025
+
+kafka:
+  consumer:
+    verification:
+      topicName: 'verification.event'
+poller:
+  new:
+    threadNamePrefix: new
+    delay: 1000
+  rendered:
+    threadNamePrefix: rendered
+    delay: 1000
+
+rest:
+  template:
+    endpoint: http://localhost:8080/template/templates/render
+    timeout: 2s
+  gotify:
+    endpoint: http://localhost:9090/message?token={token}
+    timeout: 2s
+    token: AXELaELbOLqVLIo

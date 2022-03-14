@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: CREATE_NOTIFICATION_TABLE
+      author: g.zenko
+      changes:
+        - sqlFile:
+            dbms: 'postgresql'
+            endDelimiter: ';'
+            splitStatements: true
+            path: sql/create_notification_table.sql
+            stripComments: true
+            relativeToChangelogFile: true
+      rollback:
+        - sqlFile:
+            dbms: 'postgresql'
+            endDelimiter: ';'
+            splitStatements: true
+            path: rollback/create_notification_table_rollback.sql
+            stripComments: true
+            relativeToChangelogFile: true

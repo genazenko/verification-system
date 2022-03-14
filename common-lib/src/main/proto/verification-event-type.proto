@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package com.sunfinance.group.verification.system;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "subject-type.proto";
+
+message VerificationEvent {
+  google.protobuf.StringValue id = 1;
+  google.protobuf.StringValue code = 2;
+  Subject subject = 3;
+  google.protobuf.Timestamp occurredOn = 4;
+  EventType eventType = 5;
+
+  enum EventType {
+    verificationCreated = 0;
+    verificationFailed = 1;
+    verificationConfirmed = 2;
+  }
+}

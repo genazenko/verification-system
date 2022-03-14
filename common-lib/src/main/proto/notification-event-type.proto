@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package com.sunfinance.group.verification.system;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+message NotificationEvent {
+  google.protobuf.StringValue id = 1;
+  google.protobuf.Timestamp occurredOn = 4;
+  EventType eventType = 5;
+
+  enum EventType {
+    notificationCreated = 0;
+    notificationDispatched = 1;
+  }
+}

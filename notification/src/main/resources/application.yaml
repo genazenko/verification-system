@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: notification
+  profiles:
+    active: dev
+
+server:
+  port: 8080 # never change it on qa/test. Even in consul
+  servlet:
+    # should be changed in consul only. Here for test purpose only
+    context-path: /${spring.application.name}
+
+# never change it on qa/test. Even in consul. Here just for local test
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus

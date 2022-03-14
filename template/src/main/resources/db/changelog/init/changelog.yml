@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: CREATE_TEMPLATE_TABLE
+      author: g.zenko
+      changes:
+        - sqlFile:
+            dbms: 'postgresql'
+            endDelimiter: ';'
+            splitStatements: true
+            path: sql/create_template_table.sql
+            stripComments: true
+            relativeToChangelogFile: true
+        - sqlFile:
+            dbms: 'postgresql'
+            endDelimiter: ';'
+            splitStatements: true
+            path: sql/init_records.sql
+            stripComments: true
+            relativeToChangelogFile: true
+      rollback:
+        - sqlFile:
+            dbms: 'postgresql'
+            endDelimiter: ';'
+            splitStatements: true
+            path: rollback/create_template_table_rollback.sql
+            stripComments: true
+            relativeToChangelogFile: true
